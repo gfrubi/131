@@ -25,6 +25,7 @@
 \fancyhead[LE,RO]{\slshape \MakeUppercase{\headersupplementmark}\leftmark}
 \usepackage{titlesec} %must be called AFTER fancyhead.
 \titleformat{\section}{\normalfont\Large\bfseries}{\headersupplementmark \thesection}{1em}{} % At start of section
+\renewcommand{\headersupplementmark}{Lab }
 
 \newcommand\immediateaddcontentsline[3]{%
         \begingroup
@@ -42,9 +43,22 @@
 \usepackage{tocloft} %Allow us to leave page numbers for Parts out of table of contents
 \cftpagenumbersoff{part} %No page numbers for Parts out of table of contents
 \renewcommand{\cftsecdotsep}{\cftsubsecdotsep}
+\setcounter{tocdepth}{1}
+\setlength{\cftbeforesecskip}{10.0pt plus 1.0pt minus 3.0pt} %space between chapter listings in TOC.  Default is 10.0pt plus 1.0pt
 
 \setlength\parskip{\medskipamount}
 \setlength\parindent{0pt}
+
+\newcommand{\startappendix}{
+	\appendix
+	\immediateaddcontentsline{toc}{part}{Appendices} 
+		%Doing this instead of \part avoids a Roman number for Appendices in the toc
+	\cleardoublepage
+	\NoForceSectionOddPage 
+		%Makes NO extra page break after each appendix; Appendices can start on odd or even page (right or left side).
+	\renewcommand{\headersupplementmark}{Appendix }
+	\titleformat{\section}{\normalfont\large\bfseries}{\headersupplementmark \thesection :}{1ex}{}
+}
 
 \usepackage{xcolor}
 \usepackage[pagecolor={white},nopagecolor={white}]{pagecolor}
@@ -52,29 +66,14 @@
 %\usepackage{epstopdf} %this package apparently allows pdflatex to work on this document, since all we use are eps figures.
 \usepackage{authblk}
 
-%---------------------------------------------------------------------------------------------------
-%Footnotes
-% Note by MT, 3/19/2017: I have no idea what the code below is actually doing.  
-% But the Latex compiler crashes whenI take it out, so for now I'm leaving it in.
+\usepackage[hyperfootnotes=false]{hyperref} %hypderfootnotes disabled for compatibility with footmisc.
+\usepackage[stable]{footmisc} %option [stable] removes footnotes from section title in TOC and header.
 
-%% Special footnote code from the package 'stblftnt.sty'
-%% Author: Robin Fairbairns -- Last revised Dec 13 1996
-\makeatletter
-\let\SF@@footnote\footnote
-\def\footnote{\ifx\protect\@typeset@protect
-    \expandafter\SF@@footnote
-  \else
-    \expandafter\SF@gobble@opt
-  \fi
-}
-\expandafter\def\csname SF@gobble@opt \endcsname{\@ifnextchar[%]
-  \SF@gobble@twobracket
-  \@gobble
-}
-\edef\SF@gobble@opt{\noexpand\protect
-  \expandafter\noexpand\csname SF@gobble@opt \endcsname}
-\def\SF@gobble@twobracket[#1]#2{}
-\makeatother
+% The following two lines fix an additional problem that arises when a footnote comes within a section title.
+% Hyperref normally includes the footnote text in the pdf table of contents, and throws a warning.
+% The code below excludes the footnote text, and also makes it so no warning is issued.
+\let\regularfootnote\footnote
+\renewcommand{\footnote}[1]{\texorpdfstring{\regularfootnote{#1}}{}}
 
 
 %---------------------------------------------------------------------------------------------------
@@ -125,6 +124,8 @@
 \usepackage{amsmath} %uncommented by MT 5/2015, used in "E near charged rod"
 \usepackage{amssymb}
 \usepackage{mathtools} %added by MT 6/2015, for access to dcases environment in finding_v_from_e
+\input{../../131/StudentGuideModule1/pgfplots_graphs/lab_graph_definitions.tex}
+\input{../../131/StudentGuideModule1/endnote_commands.tex}
 
 \usepackage{hhline}
 \setlength\doublerulesep{0.75pt}
@@ -156,6 +157,7 @@
 \counterwithin*{footnote}{section} %resets the footnote counter to 1 at every new section (each lab)
 \counterwithin*{equation}{section} %resets the equation counter to 1 at every new section (each lab)
 \counterwithin*{figure}{section} %resets the figure counter to 1 at every new section (each lab)
+\counterwithin*{endnote}{section} %resets the figure counter to 1 at every new section (each lab)
 
 \newcommand\specialcaret {\hspace{0.0ex}\raisebox{0.6ex}{\scalebox{0.7}[0.7]{$\boldsymbol{\wedge}$}}\hspace{0.1ex}}
 
@@ -168,10 +170,11 @@
 \newenvironment{newboxed} %maybe there's a better way to do this.  I just cribbed from the web. --MT
     {\begin{center}
     \begin{tabular}{|p{0.9\textwidth}|}
-    \hline\\
+    \hline\vspace{-0.02in}
     }
     { 
-    \\\\\hline
+    \vspace{0.05in}
+    \\\hline
     \end{tabular} 
     \end{center}
     }

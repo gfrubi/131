@@ -1,0 +1,353 @@
+% This file loads all packages and makes all definitions used for making various graphs,
+% using Tikz and pgfplots.  It was developed in July-August 2019 by Matt Trawick.
+% The goal is to pre-define several basic types of graphs used in our manuals (plain axes
+% with qualitative graphs, or empty grids with scales, etc.) that could be easily used and
+% tweaked throughout the manual, for stylistic uniformity.
+% These could gradually (or not so gradually) replace the hodge-podge of .eps files
+% generated from difference sources that are currently used in the manuals.
+\usepackage{pgfplots}
+\usepackage{sansmath} 
+\usepgfplotslibrary{groupplots}
+\usetikzlibrary{pgfplots.groupplots}
+\usetikzlibrary{math}
+\usetikzlibrary{decorations.markings}
+\usepackage{xparse} %used for \NewDocumentCommand
+% xparse is actually used elsewhere as well, so doesn't need to be called here for the main lab manual.
+% I'm keeping the line in for when this file is called by another .tex file, for instance if you're just testing
+% how things work.
+
+\pgfplotsset{compat=1.16} %Version 1.16 is the current version, as of July 2019
+
+%-------------------------------------------------------------------------
+% Below, set several style choices used throughout the manual.
+\tikzset{every picture/.style={font=\sffamily}}
+
+\pgfplotsset{
+  tick label style = {font=\sansmath\sffamily},
+%  every axis label = {font=\sansmath\sffamily},
+%  legend style = {font=\sffamily},
+%  label style = {font=\sffamily}
+	samples = 200,
+	height = {2in}, width = {2in},
+	every axis/.append style={line width=0.8pt}, %default appears to be about 0.4pt
+	tick style={black, line width=0.8pt}, %default appears to be gray and about 0.4pt
+}
+
+
+% This pre-defines a "cycle" of colors and styles that can be used for successive plots added to an axis.
+% In this case the "cycle" effectively has only one entry, so all plots look the same.
+% But note that in order to achieve that effect, I need to repeat the entry, once with a comma, and once
+% without a comma.  See the file mwe_cyclelist_weirdness.tex for details.
+\pgfplotscreateplotcyclelist{lab_solid}{
+	{black, line width = 2pt, mark=none},
+	{black, line width = 2pt, mark=none}
+	% Note: by my eye, "thick"=0.8 pt, "very thick" = 1.2 pt, "ultra thick" = 1.6 pt
+}
+
+% This style can be called for a plot (addplot [path_leg] ...).  It puts an arrow head in the middle of the path.
+\pgfplotsset{path_leg/.style={
+	line width=1.5pt, 
+	postaction={decorate, decoration={markings,
+	mark=at position 0.55 with {\arrow{>};},
+}}}}
+
+\pgfplotsset{path_point/.style={
+	only marks, 
+	mark=*
+}}
+
+%---------------------------------------------------------------------------
+% This part predefines several named styles ("lab_noticks_1quad" for a single-quadrant set of blank axes, etc.)
+% that can be called for various graphs used throughout the manual.
+% Each option within the defined style can be overridden individually as needed, or
+% additional options added. For instance,
+% 		\begin{lab_axis}[lab_noticks_2quads,
+% 			ymin = -0.5,
+% 			....
+%
+% These "styles" are really just lists of options, and can be combined if needed, as in 
+% 		\begin{lab_axis}[lab_noticks_2quads,
+%			plus_minus_zero_labels
+% 			....
+
+% single quadrant:
+\pgfplotsset{lab_noticks_1quad/.style={
+	scale only axis=true,
+	cycle list name = lab_solid,
+	% every axis plot/.append style={very thick},
+	% I now specify thickness in the lab_solid cycle definition, so previous line is not needed.
+	every axis plot/.append style={domain=0:0.9*\pgfkeysvalueof{/pgfplots/xmax}},
+	axis x line={left, x axis line style={->}}, % solid line with no arrow.
+	axis y line={left, y axis line style={->}},
+	xmin=0, xmax=1,
+	ymin=0, ymax=1, %Although there are no ticks, this seems to be needed to make the ticks disappear.
+	tick style={xtick=\empty,ytick=\empty}
+}}
+
+% two quadrants (I and IV):
+\pgfplotsset{lab_noticks_2quads/.style={
+	scale only axis=true,
+	cycle list name = lab_solid,
+	every axis plot/.append style={domain=0:0.9*\pgfkeysvalueof{/pgfplots/xmax}},
+	axis x line= {middle, x axis line style={->}}, 
+	axis y line= {left,  y axis line style={<->}},
+      xlabel style={at=(current axis.right of origin), anchor=west},
+	xmin=0, xmax=1,
+	ymin=-1, ymax=1, 
+	tick style={xtick=\empty,ytick=\empty},
+}}
+
+%four quadrants:
+\pgfplotsset{lab_noticks_4quads/.style={
+	scale only axis=true,
+	cycle list name = lab_solid,
+	every axis plot/.append style={domain=0.85*\pgfkeysvalueof{/pgfplots/xmin} : 
+                                                                  0.85*\pgfkeysvalueof{/pgfplots/xmax}  },
+%old way:
+%	axis x line= {middle, x axis line style={<->}}, 
+%	axis y line= {middle, y axis line style={<->}},
+%	xlabel style={at=(current axis.right of origin), anchor=north east},
+%	ylabel style={at=(ticklabel* cs:1.0), anchor=north east},
+%new way:
+	axis x line*= {middle, x axis line style={<->}}, 
+	axis y line*= {middle, y axis line style={<->}},
+	algebraic_labels,
+	xmin=-1, xmax=1,
+	ymin=-1, ymax=1, 
+	tick style={xtick=\empty,ytick=\empty},
+	title style={at={(0,1)}},
+}}
+
+%three dimension (x-y-z):
+\pgfplotsset{lab_noticks_3axes/.style={
+	scale only axis=true,
+	cycle list name = lab_solid,
+	every axis plot/.append style={domain=0.85*\pgfkeysvalueof{/pgfplots/xmin} : 
+                                                                  0.85*\pgfkeysvalueof{/pgfplots/xmax}  },
+	axis x line= {middle, x axis line style={<->}}, 
+	axis y line= {middle, y axis line style={<->}},
+	axis z line= {middle, z axis line style={<->}},
+	xlabel style={at=(current axis.right of origin), anchor=north east},
+	ylabel style={at=(ticklabel* cs:0), anchor=north east},
+	xmin=-1, xmax=1,
+	ymin=-1, ymax=1, 
+	zmin=-1, zmax =1,
+	tick style={xtick=\empty,ytick=\empty,ztick=\empty},
+}}
+
+\pgfplotsset{lab_noticks_1axis/.style={
+	cycle list name = lab_solid,
+	scale only axis=true,
+	width={3.0in}, height={0.1in},
+	xlabel={$x$},
+	axis x line= {middle, x axis line style={<->}}, 
+	xlabel style={at=(current axis.right of origin), anchor=north east},
+	y axis line style = {draw=none},
+	xmin=-1, xmax=1,
+	ymin=-1, ymax=1, %Apparently we need to set SOME range to avoid pgfplots throwing a warning at us.
+	tick style={xtick=\empty,ytick=\empty},
+}}
+
+\pgfplotsset{lab_grid/.style={
+	scale only axis=true,
+	cycle list name = lab_solid,
+	% every axis plot/.append style={ultra thick},
+	% Interestingly, previous line does NOT override thickness in lab_solid
+%	tick style={grid=both,major tick length=0pt},
+	width=4.5in, height=1.8in,
+	xmin=0, xmax=5,
+	ymin=-1, ymax=1,
+	axis line style={draw=none},
+	tick style={
+		grid=both, 
+		major tick length=0pt,
+		minor tick length=0pt},
+	y0_line, x0_line,
+}}
+
+% This option puts the labels next to the ends of the axes, rotated right-side up.
+\pgfplotsset{algebraic_labels/.append style={
+	xlabel style={at=(current axis.right of origin), anchor=north east},
+	ylabel style={at=(ticklabel* cs:1.0), rotate=-90, anchor=north east},
+}}
+
+% Note that the following three options, y0_line, x0_line, and ylabel_align, achieve their results by adding
+% "Extra ticks" on the y-axis, with labels that are either missing completely or "hidden".
+
+% This option adds a darker horizontal line at y=0.  It is now standard on lab_grid style graphs.
+% You can cancel this option by using
+%			extra y ticks={},
+% as needed, but be sure to do so BEFORE using the ylabel_align option, as it will cancel that too.
+\pgfplotsset{y0_line/.style={
+	extra y ticks={0},
+	extra y tick labels = {},
+	extra y tick style={
+		major grid style={black, line width=0.8pt},
+		major tick length=0pt,
+		},
+}}
+
+% This option adds a darker vertical line at x=0.  It is now standard on lab_grid style graphs.
+% You can cancel this option by using
+%			extra x ticks={},
+% as needed.
+\pgfplotsset{x0_line/.style={
+	extra x ticks={0},
+	extra x tick style={
+		major grid style={black, line width=0.8pt},
+		major tick length=0pt,
+		xticklabels = {},
+		},
+}}
+
+% In a groupplot, the y labels can be misaligned if one graph has "longer" tick lables, such as ones that include
+% a negative sign.  This command bumps the y label of the current to the left, to match the alignment of the
+% y label of the other graph.  To tell it how much to move it over, you need to give it the longest tick label text 
+% of the other graph as an argument.  Example: 
+% 		ylabel_align={-10}
+\pgfplotsset{ylabel_align/.style={
+	extra y ticks={\pgfkeysvalueof{/pgfplots/ymin}},
+	extra y tick labels={\phantom{$#1$}},
+ 	extra y tick style={
+		major tick length=0pt,
+		},
+}}
+
+% This version of the function does the same as above, but uses a length as the argument:
+%		ylabel_align_length{0.5in}
+% Because it does not define a phantom label, it is more robust and plays nicely with y0_line.
+% Eventually I should change this to use actual text for the argument, using something like the
+% widthof function, but there seem to be technical issues getting that to work.
+\pgfplotsset{ylabel_align_length/.style={
+	every axis y label/.style={
+		at={(0,0.5)}, % do I need this line?
+		xshift=-#1, 
+		rotate=90, % do I need this line?
+}}}  
+
+
+% Use this to add y axis labels +, -, and 0 to graphs, presumably to lab_noticks_2quads style graphs.
+\pgfplotsset{plus_minus_zero_labels/.style={
+	extra y tick style={major tick length=0pt},
+	extra y ticks = {-0.8, 0, 0.8},
+	extra y tick labels = {\scriptsize{$-$},0,\scriptsize{$+$}},
+}}
+
+
+% The commmand below makes vertical alignment marks through all graphs in a groupplot.
+% (Restricted to only a single column, but multiple rows.  The number of rows can be "1" though.)
+%
+% How to call:
+% 		\makegroupverticlas[rows]{x1,x2,x3...}{xmin}{xmax}
+% rows is assumed to be 2 if not specified.  xmin and xmax are the min and max values of the axis.
+% Oh, and it won't work if you define a name for the group; it must remain the default "group".
+%
+% This was a giant pain to get to work.  
+% The problem seems to be that INSIDE the groupplot environment, tikz knows about xmin and xmax
+% (since it can get it from \pgfkeysvalueof{/pgfplots/xmin} ) but does not know about the top and bottom
+% of the whole group; only of a single axis.
+% But OUTSIDE the grouplot environment, tikz knows about the top and bottom of the group
+% (from group c1r1.north west, for instance), but does not know about the scale of the x axis.
+% Or at least I couldn't figure out how to get it to know about the x axis.  Maybe someone else can.
+% If so, it would be a nice improvement to NOT have to pass it xmin and xmax, or even the number of
+% rows, for that matter. 
+\NewDocumentCommand \makegroupverticals {o m m m} {
+	\coordinate (TL) at (group c1r1.north west); % top left
+      \IfNoValueTF  {#2} {%If no lastrow given, assume two rows
+		\coordinate (BR) at (group c1r3.south east); % bottom right
+		}
+	{ % else use the value for the number of the last row
+		\coordinate (BR) at (group c1r#1.south east); % bottom right
+		}
+	\newdimen\xleft
+	\pgfextractx\xleft{\pgfpointanchor{TL}{center}}
+	\newdimen\xright
+	\pgfextractx\xright{\pgfpointanchor{BR}{center}}
+
+	\newdimen\xx
+	\foreach \x in {#2} { 
+		\tikzmath{\xx = \xleft + (\xright - \xleft) * ((\x - #3) / (#4 - #3))  ;}
+		\draw[black, thick, dashed] (\xx, |- TL) -- (\xx, |- BR);
+		}
+}
+
+% Here's an older version of makegroupverticals.
+% It does not work, because the x axis coordinates in \x are often wrong,
+% Sometimes by a huge amount.  I suspect there's a way to make this work,
+% with a small fix, so I'll keep it here.
+\NewDocumentCommand \oldmakegroupverticals {o m} {
+	\coordinate (toppoint) at  (group c1r1.north);
+      \IfNoValueTF  {#2} {%If no lastrow given, assume two rows
+		\coordinate (botpoint) at  (group c1r2.south);
+		}
+	{ % else use the value for the number of the last row
+		\coordinate (botpoint) at  (group c1r#1.south);
+	}
+	\foreach \x in {#2} 
+		\draw [black, very thick, dashed] (\x, |- toppoint) -- (\x, |- botpoint);
+}
+
+
+%------------------------------------------------------------------------------------------------------------------
+% Finally, this next section defines two (currently) environments, simply for convenience, to make
+% these graphs less cumbersome to call.  You can still make graphs by using 
+% 		\begin{tikzpicture}
+% 		\begin{axis}
+%		 .....
+% if you want.
+
+
+% The lab_axis environment, defined below, is basically a thin wrapper around the "tikzpicture" and "axis" 
+% environments, combined.  When called in the starred version ("*", see below) it also centers the graph.
+% Because the * version uses \begin{center}, it adds a little extra space before and after the graph
+% compared to the non-starred version.  I thought about fixing this by substituting \hspace*{\fill}, but in
+% fact that makes things look too squished.
+\NewDocumentEnvironment{lab_axis}{s}{
+	\IfBooleanTF #1
+		{\begin{center}} %if starred
+%		{\hspace*{\fill}}
+		{} %if not starred, do nothing
+	\vspace{0em} % Because our lab manual skips lines between paragraphs, we don't need extra space 
+	\begin{tikzpicture} 
+	\begin{axis}
+	}
+	{\end{axis} 
+	\end{tikzpicture}
+	\vspace{0em}
+	\IfBooleanTF #1
+		{\end{center}} %if starred
+%		{\hspace*{\fill}}
+		{} %if not starred, do nothing
+	 }
+% Next four lines allow either 
+%	\begin{lab_axis*}... \end{lab_axis*} 
+% or 
+% 	\begin{lab_axis}*... \end{lab_axis}
+\ExplSyntaxOn
+\cs_new:cpn {lab_axis*} {\lab_axis*}
+\cs_new_eq:cN {endlab_axis*} \endlab_axis
+\ExplSyntaxOff
+
+% This new environment is a thin wrapper around the "tikzpicture" and "groupplot" environments, combined.
+% When called in the starred version, it is centered as well.  (Here, the "*" goes AFTER the "}", as in
+% 		\begin{lab_groupplot}*{}blah blah blah.
+% The empty argument above is where you put any line or lines that go after the \end{groupplot} but
+% before the \end{tikzpicture}, which would typically be drawing vertical alignment marks
+% using \makegroupverticals, or adding other annotations.
+\NewDocumentEnvironment{lab_groupplot}{s m}{
+	\IfBooleanTF #1
+		{ \begin{center} } %if starred
+		{} %if not starred, do nothing
+	\vspace{0em}
+	\begin{tikzpicture}
+	\begin{groupplot}
+	}
+	{\end{groupplot}
+	#2
+	\end{tikzpicture}
+	\vspace{0em}
+	\IfBooleanTF #1
+		{\end{center} } %if starred
+		{} %if not starred, do nothing
+	 }
+

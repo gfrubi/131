@@ -1,12 +1,12 @@
-%\documentclass[english,twoside]{article}
-\documentclass[english,twoside]{labmanual} %labmanual.cls is a modified version of article.cls, 
-                                                                     %tweaked to handle \part{} differently
+\documentclass[english,twoside]{article}
 
-\input{labmanual_formatting_commands} %all general latex packages, commands, and definitions now here.
-\externaldocument{master}
+\input{../../131/StudentGuideModule1/labmanual_formatting_commands} %all general latex packages, commands, and definitions now here.
+\newcommand{\coursefolder}{Phys131} %This defines the place students will look for various files
+\ForceSectionOddPage %This option makes each lab start on odd numbered page (right hand side).
+\externaldocument{master131}
 
 %syntax: \includeonly{lab1,lab2,lab3} with no spaces after the commas.
-%\includeonly{measurement_uncertainty/measurement_uncertainty}
+%\includeonly{biot_savart_law/biot_savart_law, charge_density/charge_density,eoverm/eoverm }
 %DANGER: The includeonly statement will make a document that does NOT have sequential page numbers.
 
 \newcommand{\supplementmark}{S}
@@ -17,104 +17,29 @@
 
 \begin{document}
 
-\setcounter{page}{1}  %Set this to desired first page
-\setcounter{section}{0} %set this to desired first section number MINUS ONE
+\setcounter{page}{237}  %Set this to desired first page
+\setcounter{section}{38} %set this to desired first section number MINUS ONE
 
 %--------------------------------------------
-\part{Kinematics}
+%Put include or includelab statements for labs below here.
+\includelab{1}{gravity_normal_elevators/gravity_normal_elevators}
+\includelab{1}{tangential_and_centripetal_acc/tangential_and_centripetal_acc}
+\includelab{1}{drag_force/drag_force}
+\includelab{1}{pendulum_period/pendulum_period}
+\includelab{1}{damped_oscillator/damped_oscillator}
+\includelab{1}{galilean_exercises/galilean_exercises}
+\includelab{1}{time_dilation_length_contraction/time_dilation_length_contraction} 
+\includelab{1}{lorentz_transformations/lorentz_transformations}
+\includelab{1}{pole_and_barn/pole_and_barn} 
 
-%\include{measuring/measuring}
-%\include{walking_speed}
-%\include{converting_units}
-%\include{measurement_length}
-%\include{determining_pi}
-%\include{measurement_uncertainty/measurement_uncertainty}
-%\include{position/position}
-%\include{velocity/velocity}
-%\include{relating/relating}
-%\include{instantaneous_velocity/instantaneous_velocity}
-%\include{changing/changing}
-%\include{slowing/slowing}
-%\include{equations/equations}
-%\include{measurement}
-%\include{measurement_uncertainty/measurement_uncertainty}
-%\include{grav_freefall}
-%\include{vectors/vectors}
-%\include{acceleration/acceleration}
-%\include{reaction_time}
-%\include{tossed_ball}
-%\include{independence/independence}
-%\include{ski_jump/ski_jump}
-%\include{projectile}
-\include{vectors/vectors}
-%\include{circ_motion/circ_motion}
 
 %--------------------------------------------
-\part{Newton's Laws}
-
-%\include{force1/force1}
-%\include{force2/force2}
-%\include{combining/combining}
-%\include{force_mass/force_mass}
-%\include{newton/newton}
-%\include{atwood/atwood}
-%\include{friction/friction}
-%\include{check_your_units/check_your_units}
-%\include{elec_grav/elec_grav}
-%\include{centripetal/centripetal}
-%\include{kepler}
-
-%--------------------------------------------
-\part{Conservation Laws}
-
-%\include{work_power/work_power}
-%\include{work_kinetic/work_kinetic}
-%\include{conservation_mech}
-%\include{eoverm2/eoverm2}
-%\include{conservative/conservative}
-%\include{momentum/momentum}
-%\include{impulse/impulse}
-%\include{newtons_laws/newtons_laws}
-%\include{mom_cons/mom_cons}
-%\include{twod_collisions/twod_collisions}
-
-%--------------------------------------------
-\part{Rotational Motion}
-
-%\include{ang_lin_displacement}
-%\include{rotation/rotation}
-%\include{newtons_2law_rot}
-%\include{rolling}
-%\include{moment_inertia/moment_inertia}
-%\include{ang_mom/ang_mom}
-%\include{cons_ang_mom}
-
-%--------------------------------------------
-\part{Oscillation}
-
-%\include{hooke}
-%\include{periodic_motion/periodic_motion}
-%\include{pendulum_period}
-%\include{resonance}
-
-%--------------------------------------------
-\part{Relativity}
-
-%\include{galilean_relativity}
-%\include{twins_paradox}
-
-%--------------------------------------------
-\part{Appendices}
-
 \appendix
-%\include{appendices/treatment_data}
-%\include{appendices/one_page_uncertainty/one_page_uncertainty}
-%\include{appendices/datastudio/datastudio}
-%\include{appendices/capstone/capstone}
-%\include{appendices/cricketgraph}
-%\include{appendices/excel/excel}
-%\include{appendices/video_analysis/video_analysis}
-%\include{appendices/video_analysis_tracker/video_analysis_tracker}
-%\include{appendices/instrumentation/instrumentation}
+%\setcounter{section}{4} %set this counter to number MINUS ONE corresponding to desired appendix letter. (4 for `E', etc.)
+%Put include statements for supplementary appendices below here.
+%\includelab{1}{appendices/nuke_safety/nuke_safety}
 
+% The following command prints the "Instructor Notes" section at the end of the manual.
+% Comment it out for the regular student edition.
+\startinstructornotes
 \end{document}
